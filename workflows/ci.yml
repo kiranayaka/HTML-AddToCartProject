@@ -1,4 +1,5 @@
-name: CI Pipeline
+name: CI/CD Pipeline
+
 on:
   push:
     branches: [ "main" ]
@@ -10,14 +11,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Validate HTML
+        uses: Cyb3r-Jak3/html5validator-action@v1.0.4
         with:
-          node-version: '18'
+          root: .
 
-      - name: Install dependencies
-        run: npm install
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
 
-      - name: Run tests
-        run: npm test
 
